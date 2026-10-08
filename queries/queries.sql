@@ -12,7 +12,7 @@ SELECT apellido1, apellido2, persona.nombre FROM persona LEFT JOIN profesor ON p
 SELECT departamento.nombre FROM departamento LEFT JOIN profesor ON departamento.id = profesor.id_departamento WHERE profesor.id_departamento IS NULL;
 SELECT apellido1, apellido2, persona.nombre FROM persona LEFT JOIN profesor ON persona.id = profesor.id_profesor LEFT JOIN asignatura ON profesor.id_profesor = asignatura.id_profesor WHERE asignatura.id_profesor IS NULL;
 SELECT id, nombre from asignatura WHERE asignatura.id_profesor IS NULL;
-#### SELECT nombre FROM departamento;
+SELECT nombre FROM departamento;
 SELECT count(*) AS total FROM persona WHERE tipo = "alumno";
 SELECT count(*) AS total FROM persona WHERE tipo = "alumno" AND YEAR(fecha_nacimiento) = 1999;
 SELECT * FROM profesor;
