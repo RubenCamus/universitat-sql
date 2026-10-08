@@ -1,50 +1,28 @@
--- 1. Retorna un llistat amb el primer cognom, segon cognom i el nom de tots els/les alumnes. El llistat haurà d'estar ordenat alfabèticament de menor a major pel primer cognom, segon cognom i nom.
-
-
--- 2. Esbrina el nom i els dos cognoms dels alumnes que no han donat d'alta el seu número de telèfon en la base de dades. (nombre, apellido1, apellido2)
-
-
--- 3. Retorna el llistat dels alumnes que van néixer en 1999. (id, nombre, apellido1, apellido2, fecha_nacimiento)
-
-
-
--- 4. Retorna el llistat de professors/es que no han donat d'alta el seu número de telèfon en la base de dades i a més el seu NIF acaba en K. (nombre, apellido1, apellido2, nif)
-
-
--- 5. Retorna el llistat de les assignatures que s'imparteixen en el primer quadrimestre, en el tercer curs del grau que té l'identificador 7. (id, nombre, cuatrimestre, curso, id_grado)
-
-
--- 6. Retorna un llistat dels professors/es juntament amb el nom del departament al qual estan vinculats. El llistat ha de retornar quatre columnes, primer cognom, segon cognom, nom i nom del departament. El resultat estarà ordenat alfabèticament de menor a major pels cognoms i el nom. (apellido1, apellido2, nombre, departamento)
-
-
--- 7. Retorna un llistat amb el nom de les assignatures, any d'inici i any de fi del curs escolar de l'alumne/a amb NIF 26902806M. (nombre, anyo_inicio, anyo_fin)
-
-
--- 8. Retorna un llistat amb el nom de tots els departaments que tenen professors/es que imparteixen alguna assignatura en el Grau en Enginyeria Informàtica (Pla 2015). (nombre)
-
-
--- 9. Retorna un llistat amb tots els alumnes que s'han matriculat en alguna assignatura durant el curs escolar 2018/2019. (nombre, apellido1, apellido2)
-
-
--- Resol les 6 següents consultes utilitzant les clàusules LEFT JOIN i RIGHT JOIN.
--- 10. Retorna un llistat amb els noms de tots els professors/es i els departaments que tenen vinculats. El llistat també ha de mostrar aquells professors/es que no tenen cap departament associat. El llistat ha de retornar quatre columnes, nom del departament, primer cognom, segon cognom i nom del professor/a. El resultat estarà ordenat alfabèticament de menor a major pel nom del departament, cognoms i el nom. (departamento, apellido1, apellido2, nombre)
-
-
--- 11. Retorna un llistat amb els professors/es que no estan associats a un departament. (apellido1, apellido2, nombre)
-
-
--- 12. Retorna un llistat amb els departaments que no tenen professors/es associats. (nombre)
-
-
--- 13. Retorna un llistat amb els professors/es que no imparteixen cap assignatura. (apellido1, apellido2, nombre)
-
-
--- 14. Retorna un llistat amb les assignatures que no tenen un professor/a assignat. (id, nombre)
-
-
--- 15. Retorna un llistat amb tots els departaments que no han impartit assignatures en cap curs escolar. (nombre)
-
-
+SELECT apellido1, apellido2, nombre FROM persona WHERE tipo = "alumno";
+SELECT apellido1, apellido2, nombre FROM persona WHERE tipo = "alumno" AND telefono IS null;
+SELECT id, nombre, apellido1, apellido2, fecha_nacimiento FROM persona WHERE tipo = "alumno" AND YEAR(fecha_nacimiento) = 1999;
+SELECT apellido1, apellido2, nombre, nif FROM persona WHERE tipo = "profesor" AND telefono IS null AND substring(nif, -1, 1) = "K";
+SELECT id, nombre, cuatrimestre, curso, id_grado FROM asignatura WHERE cuatrimestre = 1 AND id_grado = 7 AND curso = 3 ;
+SELECT persona.apellido1, persona.apellido2, persona.nombre, departamento.nombre FROM persona INNER JOIN profesor ON persona.id = profesor.id_profesor INNER JOIN departamento ON profesor.id_departamento = departamento.id WHERE tipo = "profesor" ORDER BY apellido1, persona.nombre ASC;
+SELECT persona.nombre, anyo_inicio, anyo_fin FROM persona INNER JOIN alumno_se_matricula_asignatura ON persona.id = alumno_se_matricula_asignatura.id_alumno INNER JOIN curso_escolar ON alumno_se_matricula_asignatura.id_curso_escolar = curso_escolar.id WHERE nif = "26902806M";
+SELECT departamento.nombre FROM departamento LEFT JOIN profesor ON departamento.id = profesor.id_departamento LEFT JOIN asignatura ON profesor.id_profesor = asignatura.id_profesor LEFT JOIN grado ON grado.id = asignatura.id_grado WHERE grado.nombre LIKE "%Plan 2015%";
+SELECT nombre, apellido1, apellido2 FROM persona INNER JOIN alumno_se_matricula_asignatura ON persona.id = id_alumno LEFT JOIN curso_escolar ON alumno_se_matricula_asignatura.id_curso_escolar = curso_escolar.id WHERE persona.tipo = "alumno" AND curso_escolar.anyo_inicio = 2018;
+SELECT departamento.nombre, apellido1, apellido2, persona.nombre FROM profesor LEFT JOIN persona ON profesor.id_profesor = persona.id LEFT JOIN departamento ON profesor.id_departamento = departamento.id WHERE profesor.id_departamento IS NOT NULL OR profesor.id_departamento IS NULL ORDER BY departamento.nombre, apellido1, apellido2, persona.nombre ASC;
+SELECT apellido1, apellido2, persona.nombre FROM persona LEFT JOIN profesor ON persona.id = profesor.id_profesor LEFT JOIN departamento ON profesor.id_departamento = departamento.id WHERE profesor.id_departamento IS NULL;
+SELECT departamento.nombre FROM departamento LEFT JOIN profesor ON departamento.id = profesor.id_departamento WHERE profesor.id_departamento IS NULL;
+SELECT apellido1, apellido2, persona.nombre FROM persona LEFT JOIN profesor ON persona.id = profesor.id_profesor LEFT JOIN asignatura ON profesor.id_profesor = asignatura.id_profesor WHERE asignatura.id_profesor IS NULL;
+SELECT id, nombre from asignatura WHERE asignatura.id_profesor IS NULL;
+#### SELECT nombre FROM departamento;
+SELECT count(*) AS total FROM persona WHERE tipo = "alumno";
+SELECT count(*) AS total FROM persona WHERE tipo = "alumno" AND YEAR(fecha_nacimiento) = 1999;
+SELECT * FROM profesor;
+SELECT departamento.nombre, count(profesor.id_departamento) AS total FROM departamento  INNER JOIN profesor ON departamento.id = profesor.id_departamento WHERE profesor.id_departamento IS NOT NULL GROUP BY departamento.nombre ORDER BY count(profesor.id_departamento) DESC;
+SELECT grado.nombre, count(asignatura.id) AS total FROM grado LEFT JOIN asignatura ON grado.id = asignatura.id_grado GROUP BY grado.nombre ORDER BY count(asignatura.id) DESC;
+SELECT grado.nombre, count(asignatura.id) AS total FROM grado LEFT JOIN asignatura ON grado.id = asignatura.id_grado GROUP BY grado.nombre HAVING count(asignatura.id) > 40 ORDER BY count(asignatura.id) DESC;
+SELECT grado.nombre, asignatura.tipo, sum(asignatura.creditos) as creditos FROM grado LEFT JOIN asignatura ON grado.id = asignatura.id_grado GROUP BY grado.nombre, asignatura.tipo;
+SELECT anyo_inicio, count(alumno_se_matricula_asignatura.id_alumno) AS total FROM curso_escolar LEFT JOIN alumno_se_matricula_asignatura ON curso_escolar.id = alumno_se_matricula_asignatura.id_curso_escolar GROUP BY anyo_inicio;
+SELECT persona.id,persona.nombre, persona.apellido1, persona.apellido2, count(asignatura.id) AS total FROM profesor INNER JOIN persona ON profesor.id_profesor = persona.id INNER JOIN asignatura ON profesor.id_profesor = asignatura.id_profesor GROUP BY persona.nombre ORDER BY count(asignatura.id) DESC;
+SELECT * FROM persona WHERE persona.tipo = "alumno" ORDER BY (fecha_nacimiento) DESC LIMIT 1;
 -- 16. Retorna el nombre total d'alumnes que hi ha. (total)
 
 
