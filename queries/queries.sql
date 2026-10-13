@@ -16,12 +16,12 @@ SELECT nombre FROM departamento;
 SELECT count(*) AS total FROM persona WHERE tipo = "alumno";
 SELECT count(*) AS total FROM persona WHERE tipo = "alumno" AND YEAR(fecha_nacimiento) = 1999;
 SELECT departamento.nombre as departamento, count(profesor.id_departamento) AS total FROM departamento  INNER JOIN profesor ON departamento.id = profesor.id_departamento WHERE profesor.id_departamento IS NOT NULL GROUP BY departamento.nombre ORDER BY count(profesor.id_departamento) DESC;
-SELECT departamento.nombre as departamento, count(profesor.id_departamento) AS total FROM departamento  LEFT JOIN profesor ON departamento.id = profesor.id_departamento GROUP BY departamento.nombre ORDER BY departamento.id ASC;
+SELECT departamento.nombre as departamento, count(profesor.id_departamento) AS total FROM departamento  LEFT JOIN profesor ON departamento.id = profesor.id_departamento GROUP BY departamento.nombre, profesor.id_departamento, departamento.id ORDER BY departamento.id ASC;
 SELECT grado.nombre as grau, count(asignatura.id) AS total FROM grado LEFT JOIN asignatura ON grado.id = asignatura.id_grado GROUP BY grado.nombre ORDER BY count(asignatura.id) DESC;
 SELECT grado.nombre as grau, count(asignatura.id) AS total FROM grado LEFT JOIN asignatura ON grado.id = asignatura.id_grado GROUP BY grado.nombre HAVING count(asignatura.id) > 40 ORDER BY count(asignatura.id) DESC;
 SELECT grado.nombre as grau, asignatura.tipo as tipo, sum(asignatura.creditos) as total_creditos FROM grado LEFT JOIN asignatura ON grado.id = asignatura.id_grado WHERE grado.nombre LIKE "%Plan 2015%" AND asignatura.creditos IS NOT NULL GROUP BY grado.nombre, asignatura.tipo;
 SELECT anyo_inicio, count(DISTINCT alumno_se_matricula_asignatura.id_alumno) AS total FROM curso_escolar INNER JOIN alumno_se_matricula_asignatura ON curso_escolar.id = alumno_se_matricula_asignatura.id_curso_escolar WHERE alumno_se_matricula_asignatura.id_alumno IS NOT NULL GROUP BY curso_escolar.anyo_inicio;
-SELECT persona.id,persona.nombre, persona.apellido1, persona.apellido2, count(asignatura.id) AS total FROM profesor INNER JOIN persona ON profesor.id_profesor = persona.id INNER JOIN asignatura ON profesor.id_profesor = asignatura.id_profesor GROUP BY persona.id ORDER BY asignatura.id DESC;
+SELECT persona.id,persona.nombre, persona.apellido1, persona.apellido2, count(asignatura.id) AS total FROM profesor INNER JOIN persona ON profesor.id_profesor = persona.id INNER JOIN asignatura ON profesor.id_profesor = asignatura.id_profesor GROUP BY persona.id, persona.nombre, persona.apellido1, persona.apellido2 ORDER BY asignatura.id DESC;
 SELECT * FROM persona WHERE persona.tipo = "alumno" ORDER BY (fecha_nacimiento) DESC LIMIT 1;
 -- 16. Retorna el nombre total d'alumnes que hi ha. (total)
 
